@@ -1,0 +1,218 @@
+--6.1  (slide 6  query1)
+select * from facilities
+
+--6.2
+select f.name from bookings b
+inner join facilities f  on (b.facid=f.facid)
+
+--6.3
+select f.facid, f.name,f.membercost,f.monthlymaintenance from bookings b
+inner join facilities f  on (b.facid=f.facid)
+where f.membercost< (f.monthlymaintenance/50 )
+
+
+--6.4
+select * from facilities f
+where f.facid in (1,5)
+
+--7.5
+select m.joindate from members m
+order by 1 desc limit 1
+
+--7.6
+select m.firstname,m.surname,m.joindate from members m
+order by 1 desc limit 1
+
+
+--7.7
+select b.facid, b.slots from bookings b 
+order by b.facid  
+
+-- 7.8
+select count(distinct(memid)) from bookings
+
+--7.9
+select m.memid,m.joindate, row_number() OVER ( order by m.joindate) from members m
+order  by  m.joindate
+
+
+--8.10
+select m.firstname,m.surname, b.starttime from bookings b
+inner join members m  on (b.memid=m.memid)
+where m.firstname='David' and m.surname='Farrell'
+order by b.starttime
+
+
+--8.11
+select  b.starttime, f."name" from bookings b
+inner join facilities f  on (b.facid=f.facid)
+where  b.starttime::date='2012-09-21'
+order by b.starttime
+
+
+8.12 
+select distinct(m2.surname||' '||m2.firstname) as name from members m1 
+inner join members m2 on (m1.recommendedby=m2.memid)
+order by 1
+
+
+
+
+
+
+
+--14.1
+select sum (o.totalprice) from "Order" o
+
+--14.2
+select o.businessentityid, sum(o.totalprice) from  "Order" o
+group by o.businessentityid
+
+--14.3
+select o.businessentityid, sum(o.totalprice) from  "Order" o
+where o.customerid<5
+group by o.businessentityid
+
+
+--14.4
+select o.businessentityid, max(o.totalprice) from  "Order" o  --avg
+group by o.businessentityid
+
+
+--15.1
+select o.customerid, max(o.totalprice) from  "Order" o  --max(o.orderdate)
+group by o.customerid
+
+
+--15.2
+select o.employeeid, avg(o.totalprice) from  "Order" o
+where o.customerid>5
+group by o.employeeid
+
+
+--15.3
+with temp as (
+select o.customerid, max(o.totalprice) maxprice from  "Order" o
+group by o.customerid
+)
+select c.name,t.maxprice from temp t inner join customer c on (t.customerid=c.id)
+
+
+
+ 
+--15.4
+with temp as (
+select o.businessentityid, min(o.totalprice) minprice from  "Order" o
+group by o.businessentityid
+)
+select b."name"||b.region||b.zipcode as businessentity from temp t inner join businessentity b on (t.businessentityid=b.id)
+
+--15.5 
+with temp as (
+select o.businessentityid, STRING_AGG(o.totalprice::text,';')as prices from  "Order" o
+group by o.businessentityid
+)
+select b."name", t.prices  businessentity_name from temp t inner join businessentity b on (t.businessentityid=b.id)
+
+
+--15.6 
+--advanced
+
+--17.1
+SELECT BusinessEntityId, SUM(TotalPrice) as Total
+FROM public."Order"
+WHERE CustomerId < 5
+GROUP BY BusinessEntityId
+HAVING SUM(TotalPrice) > 250
+
+
+
+--18.1
+select o.businessentityid, sum(o.totalprice) from  "Order" o
+group by o.businessentityid
+HAVING SUM(o.totalprice) > 400
+
+--18.2
+select o.businessentityid, sum(o.totalprice) from  "Order" o  --avg
+where o.customerid<5
+group by o.businessentityid
+HAVING sum(o.totalprice) <1000
+
+--18.3
+select o.businessentityid, max(o.totalprice),avg(o.totalprice) from  "Order" o
+group by o.businessentityid
+HAVING max(o.totalprice)>(1.5*avg(o.totalprice))
+
+--18.4
+with temp as (
+select o.businessentityid, max(o.totalprice),avg(o.totalprice) from  "Order" o
+group by o.businessentityid
+HAVING max(o.totalprice)>(1.5*avg(o.totalprice))
+)
+select   t.*,b."name",b.region,b.zipcode  businessentity_name from temp t inner join businessentity b on (t.businessentityid=b.id)
+
+--20 view
+CREATE VIEW MaleEmployees
+AS
+SELECT Id, FirstName, LastName, HireDate 
+FROM Employee
+WHERE Gender = 'M'
+
+
+--21.1
+CREATE OR REPLACE VIEW vw_CustomerOrders
+AS
+select o.customerid, sum(o.totalprice) sumprice from  "Order" o
+group by o.customerid
+ 
+ 
+ 
+--21.2
+
+drop view vw_CustomerOrders;
+
+CREATE OR REPLACE VIEW vw_CustomerOrders AS 
+with temp as (
+select o.customerid, sum(o.totalprice) sumprice from  "Order" o
+group by o.customerid
+)
+select c.name,t.sumprice from temp t inner join customer c on (t.customerid=c.id)
+
+
+--21.3
+CREATE OR REPLACE VIEW vw_CustomerOrders AS 
+with temp as (
+select o.customerid, sum(o.totalprice) sumprice from  "Order" o
+group by o.customerid
+)
+select c.name,t.sumprice from temp t inner join customer c on (t.customerid=c.id)
+order by sumprice desc
+ 
+ 
+ --21.4
+CREATE OR REPLACE VIEW vw_EmployeeOrders
+as
+select e.firstname,e.lastname, p.name, d.quantity from orderdetails d 
+inner join  "Order" o on (d.orderid=o.id)
+inner join employee e on (o.employeeid= e.id)
+INNER join product p on (d.productid=p.id)
+
+
+ --21.5
+CREATE OR REPLACE VIEW vw_EmployeeOrders
+as
+select e.firstname,e.lastname, p.name, d.quantity from orderdetails d 
+inner join  "Order" o on (d.orderid=o.id)
+inner join employee e on (o.employeeid= e.id)
+INNER join product p on (d.productid=p.id)
+inner join businessentity b on (o.businessentityid=b.id)
+where b.region='Skopski'
+
+ 
+
+
+
+
+
+
+
