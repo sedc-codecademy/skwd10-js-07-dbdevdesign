@@ -1,0 +1,72 @@
+--1/3
+select count(grade) from grade
+
+select t.id,t.firstname, t.lastname, count(grade) from grade g
+left join teacher t on t.id = g.teacherid
+group by t.id,t.firstname, t.lastname
+--vtor nacin
+with teacher_cte as(
+select g.teacherid,count(*) as totalgrade from grade g
+group by g.teacherid
+)
+select t.nate, tc.totalgrade from teacher_cte tc 
+inner join teacher t on (t.id=tc.teacherid)
+
+
+
+
+select t.id,t.firstname, t.lastname, count(grade) from grade g
+left join teacher t on t.id = g.teacherid
+where g.studentid < 100
+group by t.id,t.firstname, t.lastname
+
+select s.id,s.firstname, s.lastname, max(g.grade), avg(g.grade) from grade g
+left join student s on s.id = g.studentid
+group by s.id,s.firstname, s.lastname
+
+
+--2/3
+select t.id,t.lastname, count(g.grade) from grade g
+left join teacher t on t.id = g.teacherid
+group by t.id,t.lastname
+having count(g.grade) > 200
+
+select t.id,t.lastname, count(g.grade) from grade g
+left join teacher t on t.id = g.teacherid
+where g.studentid < 100 
+group by t.id,t.lastname
+having count(g.grade) > 50
+
+select s.id,s.firstname, s.lastname, count(g.grade), max(g.grade), avg(g.grade) from grade g
+left join student s on s.id = g.studentid
+group by s.id,s.firstname, s.lastname
+having max(g.grade) = avg(g.grade)
+
+select s.id,s.firstname, s.lastname, count(g.grade), max(g.grade), avg(g.grade) from grade g
+left join student s on s.id = g.studentid
+group by s.id,s.firstname, s.lastname
+having max(g.grade) = avg(g.grade)
+
+
+--3/3
+create view vw_StudentGrades 
+as
+select studentid, count(grade) from grade
+group by studentid
+
+create or replace view vw_StudentGrades2
+as
+select s.id,s.firstname, s.lastname, count(g.grade) from grade g
+left join student s on s.id = g.studentid
+group by s.id,s.firstname, s.lastname
+
+ select * from vw_StudentGrades2
+order by count desc
+
+
+create view vw_studentgradedetails
+as
+select s.id,s.firstname, s.lastname, count(g.grade) from grade g
+left join student s on s.id = g.studentid
+where g.grade > 1
+group by s.id,s.firstname, s.lastname
