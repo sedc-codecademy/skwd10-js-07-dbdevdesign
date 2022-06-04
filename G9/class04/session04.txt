@@ -1,0 +1,136 @@
+--12.1
+select ((price + cost) / weight) as calculation from product
+
+--12.2
+select ceil(cost), cost, floor(price), price from product
+
+--12.3
+select id, floor(random() * 100) as randomNumber from "Order"
+
+--12.4
+select name || '; ' || region || '; ' || zipcode from businessentity
+   select concat(name, '; ', region, '; ', zipcode) from businessentity
+
+--12.5
+select concat(firstname, ' ', lastname) as fullname, char_length(concat(firstname, ' ', lastname)) from employee
+
+--12.6
+select replace(lastname, 'ski', 'ic') from employee
+	where lastname like '%ski'
+
+
+--12.7
+create temporary table holidays (
+id integer primary key,
+startdate date,
+enddate date);
+
+insert into holidays (id, startdate, enddate) values (1, '2021-6-20', '2021-6-27');
+
+select * from holidays;
+
+
+--namesto temporary koristime realna tabela
+create table members_backup (LIKE members)
+insert into members_backup select * from members
+
+
+--28.1
+create or replace function format_product_name(product_id int)
+	returns varchar
+	language plpgsql
+as
+$$
+declare 
+	formatted_product_name varchar;
+begin
+	select concat(substring(code from 1 for 2), '-', right(name, 3), '-', price)
+	into formatted_product_name
+	from product
+	where id = product_id;
+	
+	return formatted_product_name;
+end;
+$$;
+
+
+
+--demo
+select format_product_name(p.id), p.name from product p
+
+
+--29
+create or replace function get_customer_orders2(customer_id int)
+	returns table (
+		name_accnumber text,
+		city_region text,
+		order_price text
+	) 
+	language plpgsql
+as
+$$
+begin
+	return query
+	select concat(c.name, ' ', c.accountnumber), 
+		concat(left(c.city, 3), '/', left(c.regionname, 3)),
+		concat(o.id, '-', o.totalprice)
+	from customer c
+	left join "Order" o
+	on o.customerid = c.id
+	where c.id = customerid;
+end;
+$$;
+
+--demo
+select get_customer_orders2(1)
+select c.id,get_customer_orders2(c.id)  from customer c
+select * from get_customer_orders2(5);
+
+
+
+
+
+
+
+--EXTRA WORKSHOP EXERCISES--
+
+--Produce a list of the total number of slots booked per facility in the month of September 2012. Produce an output table consisting of facility id and slots, sorted by the number of slots.
+
+
+select facid, sum(slots) as "Total Slots"
+	from bookings
+	where
+		starttime >= '2012-09-01'
+		and starttime < '2012-10-01'
+	group by facid
+order by sum(slots);       
+
+--Produce a list of the total number of slots booked per facility per month in the year of 2012. Produce an output table consisting of facility id and slots, sorted by the id and month.
+
+select facid, extract(month from starttime) as month, sum(slots) as "Total Slots"
+	from bookings
+	where extract(year from starttime) = 2012
+	group by facid, month
+order by facid, month;   
+
+
+--How can you output a list of all members, including the individual who recommended them (if any)? Ensure that results are ordered by (surname, firstname).
+
+select mems.firstname as memfname, mems.surname as memsname, recs.firstname as recfname, recs.surname as recsname
+	from 
+		members mems
+		left  join members recs
+			on recs.memid = mems.recommendedby
+order by memsname, memfname;  
+
+select * from members m 
+where not m.recommendedby is null
+
+
+--How can you produce a list of all members who have used a tennis court? 
+--Include in your output the name of the court, and the name of the member formatted as a single column. 
+--Ensure no duplicate data, and order by the member --name followed by the facility name.
+
+select m.firstname||' '||f.name from bookings b  
+inner join members m on (b.memid=m.memid)
+inner join facilities f on (f.facid=b.facid)
