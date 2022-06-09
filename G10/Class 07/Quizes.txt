@@ -1,0 +1,375 @@
+------------------------SESSION 2------------------------
+Which of the following is not a DDL statement?
+- CREATE	
+- INSERT	OK
+- ALTER
+- DROP
+
+Which of the following is not a DML statement?
+- UPDATE
+- INSERT
+- CREATE	OK
+- DELETE
+
+Which SQL statement is used to update data in a database?
+- SAVE
+- MODIFY
+- SAVE AS
+- UPDATE	OK
+
+Which of the following is not numeric data type?
+- bigint
+- decimal
+- varchar	OK
+- money
+
+Which of the following is NOT true about the int data type?
+- int is an integer
+- bigint is used when the value will exceed int data type’s range
+- An Integer uses 8 bytes to store data		OK
+- Int can not store textual values
+
+------------------------SESSION 3------------------------
+Which SQL statement filters the result set with additional conditions?
+- ORDER
+- FILTER
+- WHERE		OK
+- REMOVE
+
+Which SQL statement defines how records are ordered in sort operations?
+- HIGHEST \ LOWEST
+- TOP \ BOTTOM
+- ASC \ DESC		OK
+- FIRST \ LAST
+
+How to combine two result sets in order to have result containing all data from both tables without duplicates?
+- INTERSECT
+- UNION		OK
+- EXCEPT
+- UNION ALL
+
+To find all employees which names start with the letter 'M', what statement would we use?
+- SELECT * FROM employees WHERE name = 'M%'
+- SELECT * FROM employees WHERE name LIKE 'M%'	OK
+- SELECT * FROM employees WHERE name = 'M*'
+- SELECT * FROM employees WHERE name LIKE 'M*'
+
+Which type of constraint should be used in order to prevent having two or more same values in specific table column?
+- DEFAULT
+- CHECK 
+- UNIQUE	OK
+- DISTINCT
+
+In order to make sure all values inserted for a record satisfy a certain condition, which type of constraint would we use?
+- NOT NULL
+- DEFAULT
+- DISTINCT
+- CHECK		OK
+
+If we want to link a table to another one (or make a relation between the two), what kind of a constraint would we use?
+- FOREIGN KEY	OK
+- PRIMARY KEY
+- UNIQUE
+- DISTINCT
+
+What is the most common type of relation?
+- One-to-Many	OK
+- Many-to-Many
+- One-to-One
+
+What join type matches every row of the first table with every row of the second table?
+- LEFT JOIN
+- INNER JOIN
+- CROSS JOIN	OK
+- RIGHT JOIN
+
+To combine column values from two tables with a join, what determines if they will be combined?
+- Where clause
+- Join predicate	OK
+- Foreign key constraint
+- Check constraint
+
+What is a valid outer join type?
+- TOP
+- BOTTOM
+- FULL
+- INNER		OK
+
+In the case of a left or right outer join, does the result set contain the records from an inner join?
+- Yes	OK
+- No
+
+------------------------SESSION 4------------------------
+Can we have WHERE operator in the same statement with GROUP BY operator?
+- Yes	OK
+- No
+
+Which SQL function is used to concatenate multiple string records into single value?
+- AGG
+- STRING_AGG	OK
+- MERGE
+- ADD
+
+Which operator is used to filter the result set by the result of aggregate function?
+- FILTER
+- CHECK
+- WHERE
+- HAVING	OK
+
+Can we have ORDER BY and HAVING operator in the same statement?
+- Yes	OK
+- No
+
+Can you use aggregate functions without the GROUP BY operator?
+- Yes	OK
+- No
+
+Is it possible to use GROUP BY operator on multiple columns, i.e. group by multiple columns?
+- Yes	OK
+- No
+
+Which aggregate function should be used if the user wants to get the total number of rows that satisfies the GROUP BY operator?
+- COUNT		OK
+- AVG
+- MAX
+- MIN
+
+Can an aggregate function be used in the ORDER BY operator? Example: ORDER BY SUM(totalPrice)?
+- Yes	OK
+- No
+
+A view is a named _______ that provides another way to present data in the database tables.
+- Function
+- Operator
+- Query
+- Select statement	OK
+
+Can you use views to insert data?
+- Yes	OK
+- No
+
+------------------------SESSION 5------------------------
+
+Which operator would we use to get an absolute value?
+- ^
+- +
+- @	OK
+- #
+
+By default, the value returned from the random() function is in which range?
+- 0 <= x <= 100
+- 0 <= x <= 10
+- 0 <= x <= 1		OK
+- 0 <= x <= 1000
+
+If we want to get the nearest integer LESS than or equal to the argument, which function would we use?
+- ceil(x)
+- abs(x)
+- floor(x)	OK
+- bottom(x)
+
+Which of these functions is used to get the number of characters in a string?
+- char_length(string)	OK
+- position(string)
+- lower(string)
+- upper(string)
+
+What does the upper(string) function do?
+- Converts string to lower case
+- Converts string to special characters
+- Converts string to upper case		OK
+- Returns number of characters
+
+What would the following function substring('Database' from 5 for 4) return?
+- ase
+- base	OK
+- abas
+- abase
+
+What would the following function position ('base' in 'Database') return?
+- Data
+- 4
+- 5	OK
+- base
+
+Apart from using operators, which function concatenates strings?
+- replace()
+- substring()
+- concat()	OK
+- right()
+
+What would the following function replace('database123development123and123design', '123', '-') return?
+- -123-123-123-123
+- database development and design
+- database-development-and-design	OK
+- database-123-development-123-and-123-design
+
+Until when do temporary tables exist?
+- Until we close pgAdmin
+- Until we disconnect from the database
+- For the duration of the session		OK
+- For a predetermined time
+
+Which of these is true for PL/pgSQL?
+- PL/pgSQL sends individual statements one by one
+- PL/pgSQL wraps multiple statements in an object and stores it on the database system	OK
+- PL/pgSQL wraps multiple statements in a table
+- PL/pgSQL stores the multiple statements in a table and executes them one by one
+
+Which of the following lines of codes is correct?
+- variable_name integer := 2;
+- variable_name varchar := 2;	OK
+- variable_name integer = 2;
+- variable_name integer >= 2;
+
+Can user-defined function return type be changed after the function was created?
+- Yes
+- No	OK
+
+What is the correct syntax for calling a function using the positional notation?
+- select function_name(1);
+- select function_name(variable_name => 1);
+- select function_name(variable_name := 1);	OK
+- select function_name(1 <= variable_name);
+
+In which block do we declare the function variables?
+- The select block
+- The definition block
+- The declare block	OK
+- The begin/end block
+
+------------------------SESSION 6------------------------
+What does a table valued function return?
+- One row
+- Multiple rows
+- A table				OK
+- Another function
+
+What is a row variable used for?
+- To store the name of the columns of a table
+- To store the whole row of a result set returned by the select into statement	OK
+- To store the whole result set from a select statement
+- To insert a row to a table
+
+How do you declare a row variable?
+- row_variable table_name:ROWTYPE;
+- row_variable table_name ROWTYPE;
+- row_variable table_name%ROWTYPE;	OK
+- ROWTYPE row_variable table_name;
+
+To access an individual field of the row variable, what would be the correct syntax?
+- row_variable:field_name;
+- field_name from row_variable;
+- field_name.row_variable;
+- row_variable.field_name;	OK
+
+What is the difference between a record type and row type variable?
+- It can have its value changed after it was already assigned
+- It can store multiple rows
+- It does not have a predefined structure	OK
+- The fields cannot be accessed
+
+Can record and row type variables be used with views?
+- Yes
+- No
+
+What is the correct syntax for the if-then statement?
+- if condition then statements;
+- if condition => statements;
+- if condition then statements end if;	OK
+- begin if condition then statements end if;
+
+What is the correct syntax for the if-then-else?
+- if condition then statements else alternative-statements; end if;
+- if condition then statements; else alternative-statements; end if;			OK
+- if condition then statements; then else alternative-statements; end if;
+- if condition then statements; else alternative-statements end if;
+
+Can you have more than one else if statements?
+- Yes	OK
+- No
+
+What is the found variable?
+- Global built-in variable	OK
+- Row variable
+- Record type variable
+- Integer variable
+
+Which statement populates the found variable?
+- select
+- update
+- insert into	
+- select into	OK
+
+In a table valued function, can you change the returning table's column data types or names after the function has been created?
+- Yes
+- No	OK
+
+------------------------SESSION 7------------------------
+
+A trigger is a function invoked automatically after what kind of an event occurs?
+- DDL
+- DML	OK
+- DCL
+- TCL
+
+Is one trigger bound to one and only one table?
+- Yes	OK
+- No
+
+If we have a row-level trigger that should get invoked after an update of a certain table; after an update statement affects 20 rows of the same table, how many times will the trigger get invoked?
+- 1
+- 20	OK
+- 0
+- 200
+
+If we have a statement-level trigger that should get invoked after an update of a certain table; after an update statement affects 20 rows of the same table, how many times will the trigger get invoked?
+- 1		OK
+- 20
+- 0
+- 200
+
+A trigger can be invoked _______ and _______ an event?
+- During and after
+- Before and during
+- Before and after	OK
+
+What is a transaction?
+- A data-manipulation language (DML) statement
+- A data-definition language (DDL) statement
+- A single unit of work that consists of one or more operations		OK
+- A stored procedure
+
+With what statement do you start a transaction?
+- begin		OK
+- start
+- declare
+- commit
+
+With what statement do you save the work what was done during the transaction?
+- finish
+- commit	OK
+- return
+- save
+
+Which statement is used to cancel or undo the changes of the current transaction?
+- return
+- rollback	OK
+- break
+- cancel
+
+What is the main benefit of stored procedures over normal user-defined functions?
+- Stored procedures can execute transactions	OK
+- Stored procedures are faster
+- Stored procedures are easier to write and maintain
+- Stored procedures are used in every database management system
+
+Can stored procedures return a value by default?
+- Yes	OK
+- No
+
+Parameters in stored procedures can have which modes (attributes)?
+- In and Out
+- In and Inout		OK
+- Out and Inout
+- In, Out and Inout
