@@ -1,0 +1,229 @@
+
+--11.1
+create table orderdetailsaudits 
+(id serial primary key, 
+ orderId int, 
+ orderDetailId int, 
+ oldQuantity int, 
+ oldPrice real, 
+ newQuantity real, 
+ newPrice real, 
+ changedOn timestamp default now())
+
+
+
+
+create or replace function log_order_details_changes()
+	returns trigger
+	language plpgsql
+as $$
+begin
+	if (NEW.quantity <> OLD.quantity) or (NEW.price <> OLD.price) then
+		insert into orderdetailsaudits(orderId, orderDetailId, oldquantity, oldprice, newquantity, newprice, changedon)
+		values (OLD.orderid, OLD.id, OLD.quantity, OLD.price, NEW.quantity, NEW.price, now());
+	end if;
+	
+	return NEW;
+END;
+$$
+
+
+
+create or replace trigger order_details_changes
+	before update
+	on orderdetails
+	for each row
+	execute procedure log_order_details_changes();
+
+
+--11.2
+create or replace function log_order_details_changes()
+	returns trigger
+	language plpgsql
+as $$
+begin
+	if (OLD is null) then
+		insert into orderdetailsaudits(orderid, oldquantity, oldprice, newquantity, newprice, changedon)
+		values (NEW.orderid, -1, -1, NEW.quantity, NEW.price, now());
+	elsif (NEW.quantity <> OLD.quantity) or (NEW.price <> OLD.price) then
+		insert into orderdetailsaudits(orderid, oldquantity, oldprice, newquantity, newprice, changedon)
+		values (OLD.orderid, OLD.quantity, OLD.price, NEW.quantity, NEW.price, now());
+	end if;
+	
+	return NEW;
+END;
+$$
+
+create trigger order_details_insert
+	after insert
+	on orderdetails
+	for each row
+	execute procedure log_order_details_changes();
+
+
+------------------------
+--16.1
+
+
+explain select * from customer
+where phonenumber = '645600'
+
+create index idx_customer_phone
+on customer(phonenumber);
+
+--2
+explain select * from "Order"
+where totalprice > 1
+
+create index idx_order_totalprice
+on "Order"(totalprice);
+
+
+
+
+CREATE UNIQUE INDEX customer_idx ON public.customer
+  USING btree (phonenumber COLLATE pg_catalog."default")
+  WHERE (isactive = true);
+
+
+
+---------------------------------------
+--22.1
+create or replace procedure update_order_discount(order_id int, discount int)
+language plpgsql
+as $$
+declare 
+	original_price real;
+begin
+	select totalprice from "Order" into original_price where id = order_id;
+
+	if not found then
+		raise notice 'Order with ID % not found!', order_id;
+		
+		return;
+	end if;
+
+	update "Order" set 
+		totalprice = original_price - (original_price * discount / 100),
+		comment = format('%s%% discount used.', discount)
+		where id = order_id;
+		
+	commit;
+	
+end; $$
+
+select * from "Order"
+order by 1
+
+call update_order_discount(1, 20)
+
+
+
+--22.2
+
+
+create or replace procedure insert_businessentity(
+	bussinessentityname varchar, region varchar, zipcode varchar, businessentityid inout int)
+language plpgsql
+as $$
+declare
+	existing_businessentity record;
+begin
+	select * from businessentity into existing_businessentity where name = bussinessentityname;
+	
+	if found then
+		raise 'A business entity with the name %, from region % and zipcode % already exists!', 
+			existing_businessentity.name,
+			existing_businessentity.region,
+			existing_businessentity.zipcode;
+			
+		return;
+	end if;
+	
+	insert into businessentity (name, region, zipcode)
+	values (bussinessentityname, region, zipcode);
+	
+	select id from businessentity into businessentityid where name = bussinessentityname;
+	
+	commit;
+end; $$
+
+call insert_businessentity('bussiness_name1','Skopski1','1000',1)
+
+
+--22.3
+create or replace procedure insert_order(employee_id int, total_price real, quantity_parameter int, product_id int)
+language plpgsql
+as $$
+declare
+	existing_product record;
+	new_order_id int;
+begin
+	insert into "Order" (orderdate, employeeid, totalprice)
+	values (now(), employee_id, total_price)
+	returning id into new_order_id;
+	
+	select * from product into existing_product where id = product_id;
+	
+	if not found then
+		raise 'A product with ID % cannot be found! Performing rollback', 
+			product_id;
+			
+		rollback;
+		
+		return;
+	end if;
+	
+	insert into orderdetails (orderid, productid, quantity, price)
+	values (new_order_id, product_id, quantity_parameter, total_price);
+	
+	commit;
+end; $$
+
+
+
+https://www.compose.com/articles/mastering-postgresql-tools-full-text-search-and-phrase-search/
+
+
+SELECT to_tsvector('The quick brown fox jumped over the lazy dog') @@ to_tsquery('fox');
+
+select * from customer c
+where to_tsvector(c."name"||' '||c.accountnumber||' '||c.phonenumber||' '||c.city||' '||c.regionname)@@ to_tsquery('sk:*')
+==============================================================
+
+
+
+CREATE TABLE products_json (
+    id   serial PRIMARY KEY,
+    data jsonb
+);
+-- PRODUCTS: inserting some data
+INSERT INTO products_json (DATA) VALUES (
+    '{
+        "Name": "Laptop",
+        "Price": "500.00"
+    }'
+);
+INSERT INTO products_json (DATA) VALUES (
+    '{
+        "Name": "Mechanical Keyboard",
+        "Price": "120.00"
+    }'
+);
+​
+INSERT INTO products_json (DATA) VALUES (
+    '{
+        "Name": "Laptop",
+        "Price": "600.00"
+    }'
+);
+
+
+
+select 
+p.data->>'Name' as Name, 
+avg((p.data->>'Price')::real) as Priceavg
+from products_json p
+group by Name
+
+
